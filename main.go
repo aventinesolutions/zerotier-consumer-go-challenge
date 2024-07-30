@@ -94,5 +94,8 @@ func processPayload(payload []byte) error {
 
 func main() {
 	http.HandleFunc("/", hookCatcher)
-	http.ListenAndServe(":9999", nil)
+	err := http.ListenAndServe(":4444", nil)
+	if err != nil {
+		return
+	}
 }
