@@ -6,7 +6,7 @@ Coding Challenge for ZeroTier (Broccoli IT) Webhook Consumer written in GoLang
 ```shell
 sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xvf <downloadFolder>/go1.22.5.linux-amd64.tar.gz
 export GOROOT=/usr/local/go
-go version go1.19.4 linux/amd64
+go version go1.22.5 linux/amd64
 ```
 
 # Docker Build
