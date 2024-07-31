@@ -96,11 +96,17 @@ func processPayload(payload []byte) error {
 }
 
 func main() {
-	defer logger.Sync()
+	defer func(logger *zap.SugaredLogger) {
+		err := logger.Sync()
+		if err != nil {
+			panic("unable to defer Zap logging, exiting!")
+		}
+	}(logger)
 	logger.Info("starting ZeroTier Consumer Coding Challenge")
 	http.HandleFunc("/", hookCatcher)
 	err := http.ListenAndServe(":4444", nil)
 	if err != nil {
-		return
+		logger.Errorf("error starting Web Service: %s", err)
+		panic("unable to start Web Service, exiting!")
 	}
 }
