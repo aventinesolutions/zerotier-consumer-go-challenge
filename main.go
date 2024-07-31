@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/zerotier/ztchooks"
+	"go.uber.org/zap"
 	"io"
 	"net/http"
 )
@@ -11,6 +12,8 @@ import (
 // Users will need to replace the following value with the pre-shared key for their org
 // at https://my.zerotier.com
 var psk = "YOUR-PRE-SHARED-KEY"
+
+var logger = zap.NewExample().Sugar()
 
 var ErrUnhandledHook = errors.New("unhandled hook type")
 var ErrUnknownHookType = errors.New("unknown hook type")
@@ -93,6 +96,8 @@ func processPayload(payload []byte) error {
 }
 
 func main() {
+	defer logger.Sync()
+	logger.Info("starting ZeroTier Consumer Coding Challenge")
 	http.HandleFunc("/", hookCatcher)
 	err := http.ListenAndServe(":4444", nil)
 	if err != nil {
