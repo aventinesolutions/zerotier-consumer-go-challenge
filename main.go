@@ -35,7 +35,7 @@ func helloWorld(w http.ResponseWriter, req *http.Request) {
 
 /* "liveness" for orchestration with a JSON response */
 func liveness(w http.ResponseWriter, req *http.Request) {
-	logger.Debug("liveness check")
+	logger.Debug("Liveness Check")
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(SimpleMessage{
 		Type:    "livez",
@@ -45,7 +45,7 @@ func liveness(w http.ResponseWriter, req *http.Request) {
 
 /* "readiness" for orchestration with a JSON response */
 func readiness(w http.ResponseWriter, req *http.Request) {
-	logger.Debug("readyness check")
+	logger.Debug("Readiness Check")
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(SimpleMessage{
 		Type:    "readyz",
