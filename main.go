@@ -18,7 +18,21 @@ var logger = zap.NewExample().Sugar()
 var ErrUnhandledHook = errors.New("unhandled hook type")
 var ErrUnknownHookType = errors.New("unknown hook type")
 
-func hookCatcher(w http.ResponseWriter, req *http.Request) {
+type SimpleMessage struct {
+	Type    string `json:"type"`
+	Message string `json:"message"`
+}
+
+func helloWorld(w http.ResponseWriter, req *http.Request) {
+	logger.Info("someone wants to say hello")
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(SimpleMessage{
+		Type:    "hello",
+		Message: "Hello, Aventine Solutions!",
+	})
+}
+
+func eventCatcher(w http.ResponseWriter, req *http.Request) {
 	// read post body
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
@@ -103,7 +117,8 @@ func main() {
 		}
 	}(logger)
 	logger.Info("starting ZeroTier Consumer Coding Challenge")
-	http.HandleFunc("/", hookCatcher)
+	http.HandleFunc("/hello", helloWorld)
+	http.HandleFunc("/event", eventCatcher)
 	err := http.ListenAndServe(":4444", nil)
 	if err != nil {
 		logger.Errorf("error starting Web Service: %s", err)
