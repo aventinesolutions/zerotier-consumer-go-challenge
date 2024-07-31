@@ -23,12 +23,33 @@ type SimpleMessage struct {
 	Message string `json:"message"`
 }
 
+/* just say "hello!" with a JSON response */
 func helloWorld(w http.ResponseWriter, req *http.Request) {
 	logger.Info("someone wants to say hello")
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(SimpleMessage{
 		Type:    "hello",
 		Message: "Hello, Aventine Solutions!",
+	})
+}
+
+/* "liveness" for orchestration with a JSON response */
+func liveness(w http.ResponseWriter, req *http.Request) {
+	logger.Debug("liveness check")
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(SimpleMessage{
+		Type:    "livez",
+		Message: "true",
+	})
+}
+
+/* "readiness" for orchestration with a JSON response */
+func readiness(w http.ResponseWriter, req *http.Request) {
+	logger.Debug("readyness check")
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(SimpleMessage{
+		Type:    "readyz",
+		Message: "true",
 	})
 }
 
@@ -118,6 +139,8 @@ func main() {
 	}(logger)
 	logger.Info("starting ZeroTier Consumer Coding Challenge")
 	http.HandleFunc("/hello", helloWorld)
+	http.HandleFunc("/livez", liveness)
+	http.HandleFunc("/readyz", readiness)
 	http.HandleFunc("/event", eventCatcher)
 	err := http.ListenAndServe(":4444", nil)
 	if err != nil {
