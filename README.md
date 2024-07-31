@@ -27,6 +27,9 @@ sudo /etc/init.d/docker start
 # re-login for the Unix Group change
 ```
 
+# IntelliJ Ultimate on Pengwin WSL2
+![IntelliJ Ultimate Install Go Plugin](./doc/images/screenshot-IntelliJ-Ultimate-install-Go-plugin.png)
+
 # Docker Build
 ```shell
 # build
