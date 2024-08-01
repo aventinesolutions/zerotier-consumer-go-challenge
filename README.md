@@ -38,4 +38,64 @@ docker images # find image ID
 # test
 docker run -p 4444:4444 a4b0dae69173
 ```
+# Google Cloud Platform [GCP] Deployment
+* Authenticate with GCP
+```shell
+gcloud auth login
+```
+* Ensure the default Project is set in configurations
+```shell
+gcloud config configurations list                                        
+NAME     IS_ACTIVE  ACCOUNT                       PROJECT       COMPUTE_DEFAULT_ZONE  COMPUTE_DEFAULT_REGION
+default  True       aventine.solutions@gmail.com  aventine-k8s
+```
+* Set up a Docker Image Repository in "Artifact Registry" for the Project if there isn't one already (in this case
+  we are using the Balfour Datacenter `europe-west1`)
+* Configure Docker for pushing our image to this Repository
+```shell
+gcloud auth configure-docker europe-west1-docker.pkg.dev
+```
+* Tag our Docker image
+```shell
+docker tag a4b0dae69173 zerotier-consumer-service:0.1.0-beta1
+docker tag zerotier-consumer-service:0.1.0-beta1  europe-west1-docker.pkg.dev/aventine-k8s/aventine/zerotier-consumer-service:0.1.0-beta1
+```
+* Push to our GCP Repository
+```shell
+docker push europe-west1-docker.pkg.dev/aventine-k8s/aventine/zerotier-consumer-service:0.1.0-beta1
+```
+* Use "Cloud Run" to deploy our web service managed by GCP (serverless)
+```shell
+gcloud run deploy zerotier-consumer-service --image europe-west1-docker.pkg.dev/aventine-k8s/aventine/zerotier-consumer-service:0.1.0-beta1 \
+  --platform managed --port 4444 --region europe-west1
+```
+* Check the logs of the running service
+* Add a Liveness Health check to the service using `livez`
+* Copy the Engress URL Google has given you and check access using `curl` and `hello` ... for example
+```shell
+curl -vvv https://zerotier-consumer-service-lfxfk2my7a-ew.a.run.app/hello
+...
+* Request completely sent off
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+* old SSL session ID is stale, removing
+< HTTP/2 200 
+< content-type: application/json
+< x-cloud-trace-context: cffd706698451f1cd1c7f159b66dc50d;o=1
+< date: Thu, 01 Aug 2024 14:47:21 GMT
+< server: Google Frontend
+< content-length: 56
+< alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+< 
+{"type":"hello","message":"Hello, Aventine Solutions!"}
+* Connection #0 to host zerotier-consumer-service-lfxfk2my7a-ew.a.run.app left intact
+```
+
+
+
+
+
+
+
+
 
