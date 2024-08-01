@@ -7,11 +7,11 @@ import (
 	"go.uber.org/zap"
 	"io"
 	"net/http"
+	"os"
 )
 
-// Users will need to replace the following value with the pre-shared key for their org
-// at https://my.zerotier.com
-var psk = "YOUR-PRE-SHARED-KEY"
+// WebHook Secret is provided through the environment via a GCP Secret
+var psk = os.Getenv("ZEROTIER_ONE_WEBHOOK_SECRET")
 
 var logger = zap.NewExample().Sugar()
 
@@ -138,6 +138,11 @@ func main() {
 		}
 	}(logger)
 	logger.Info("starting ZeroTier Consumer Coding Challenge")
+	if len(psk) > 0 {
+      logger.Info("it seems the ZeroTier One WebHook Secret has been set")
+	} else {
+	  panic("the ZeroTier One WebHook Secret was not properly set in the envionment")
+	}
 	http.HandleFunc("/hello", helloWorld)
 	http.HandleFunc("/livez", liveness)
 	http.HandleFunc("/readyz", readiness)

@@ -90,9 +90,13 @@ curl -vvv https://zerotier-consumer-service-lfxfk2my7a-ew.a.run.app/hello
 {"type":"hello","message":"Hello, Aventine Solutions!"}
 * Connection #0 to host zerotier-consumer-service-lfxfk2my7a-ew.a.run.app left intact
 ```
+# GCP Secret for the ZeroTier Webhook
+* use your account in Central to create a Webhook Signing Secret value
+* create a Secret `ZeroTierOneTestWebhook` in "Secret Manager" which contains this Webhook Signing Secret value
 
-
-
+# Things to Make this Service Production Ready
+* Using GitOps, it needs a pipeline to run tests, build, tag and push the image to GCP "Artifact Registry";
+  this could be done using GCP "Cloud Build"
 
 
 
