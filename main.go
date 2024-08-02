@@ -1,6 +1,8 @@
 package main
 
 import (
+	"cloud.google.com/go/firestore"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -61,6 +63,28 @@ func check_token(w http.ResponseWriter, req *http.Request) {
 	_ = json.NewEncoder(w).Encode(SimpleMessage{
 		Type:    "token_set",
 		Message: fmt.Sprintf("%t", len(psk) == 64),
+	})
+}
+
+func check_firestore(w http.ResponseWriter, req *http.Request) {
+	ctx := context.Background()
+	logger.Debug("Check Firestore Events database")
+	client, err1 := firestore.NewClientWithDatabase(ctx, "aventine-k8s", "zerotier-events")
+	if err1 != nil {
+		// Handle error
+		logger.Errorf("Error creating Firestore client:", err1)
+		panic("unable to create Firestore client")
+	}
+	defer client.Close()
+	ref := client.Doc("aventine/OLU9N1NkR0EYwYpGeBXi")
+	doc, err2 := ref.Get(ctx)
+	if err2 != nil {
+		logger.Errorf("Error fetching document from Firestore: %s", err2)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(SimpleMessage{
+		Type:    "test_firestore_document",
+		Message: fmt.Sprintf("%+v", doc.Data()),
 	})
 }
 
@@ -154,10 +178,11 @@ func main() {
 	http.HandleFunc("/livez", liveness)
 	http.HandleFunc("/readyz", readiness)
 	http.HandleFunc("/check_token", check_token)
+	http.HandleFunc("/check_firestore", check_firestore)
 	http.HandleFunc("/event", eventCatcher)
-	err := http.ListenAndServe(":4444", nil)
-	if err != nil {
-		logger.Errorf("error starting Web Service: %s", err)
+	err2 := http.ListenAndServe(":4444", nil)
+	if err2 != nil {
+		logger.Errorf("error starting Web Service: %s", err2)
 		panic("unable to start Web Service, exiting!")
 	}
 }
