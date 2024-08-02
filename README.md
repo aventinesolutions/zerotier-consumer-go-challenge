@@ -114,4 +114,6 @@ gcloud projects add-iam-policy-binding \
 ```
 ![Firestore Database Name Environment Variable for Cloud Run](./doc/images/screenshot-GCP-CloudRun-Environment-Firestore-DBName.png)
 
-
+# Improvements to Make This More Production Ready
+* use Go Packages and "layering"for _Separation of Concerns_ ... for example, to encapsulate Routing, Handlers, 
+  Persistence and Marshalling of Parameters (not so straight forward if you're used to Object Oriented languages)
