@@ -53,6 +53,16 @@ func readiness(w http.ResponseWriter, req *http.Request) {
 	})
 }
 
+/* check that the ZeroTier One Webhook Token is set correctly */
+func check_token(w http.ResponseWriter, req *http.Request) {
+	logger.Debug("Check Token")
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(SimpleMessage{
+		Type:    "token",
+		Message: psk,
+	})
+}
+
 func eventCatcher(w http.ResponseWriter, req *http.Request) {
 	// read post body
 	body, err := io.ReadAll(req.Body)
@@ -138,14 +148,11 @@ func main() {
 		}
 	}(logger)
 	logger.Info("starting ZeroTier Consumer Coding Challenge")
-	if len(psk) > 0 {
-      logger.Info("it seems the ZeroTier One WebHook Secret has been set")
-	} else {
-	  panic("the ZeroTier One WebHook Secret was not properly set in the envionment")
-	}
+
 	http.HandleFunc("/hello", helloWorld)
 	http.HandleFunc("/livez", liveness)
 	http.HandleFunc("/readyz", readiness)
+	http.HandleFunc("/check_token", check_token)
 	http.HandleFunc("/event", eventCatcher)
 	err := http.ListenAndServe(":4444", nil)
 	if err != nil {
