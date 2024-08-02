@@ -29,6 +29,7 @@ sudo /etc/init.d/docker start
 
 # IntelliJ Ultimate on Pengwin WSL2
 ![IntelliJ Ultimate Install Go Plugin](./doc/images/screenshot-IntelliJ-Ultimate-install-Go-plugin.png)
+![IntelliJ Ultimate Local Go Package Cache Permission Denied](./doc/images/screenshot-IntelliJWSL2-GoLang-pkg-permission-denied.png)
 
 # Docker Build
 ```shell
