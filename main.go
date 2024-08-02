@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/zerotier/ztchooks"
 	"go.uber.org/zap"
 	"io"
@@ -58,8 +59,8 @@ func check_token(w http.ResponseWriter, req *http.Request) {
 	logger.Debug("Check Token")
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(SimpleMessage{
-		Type:    "token",
-		Message: psk,
+		Type:    "token_set",
+		Message: fmt.Sprintf("%t", len(psk) == 64),
 	})
 }
 
