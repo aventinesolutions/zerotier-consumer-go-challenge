@@ -99,8 +99,19 @@ curl -vvv https://zerotier-consumer-service-lfxfk2my7a-ew.a.run.app/hello
 * Using GitOps, it needs a pipeline to run tests, build, tag and push the image to GCP "Artifact Registry";
   this could be done using GCP "Cloud Build"
 
-
-
-
+# Firestore Database and Integration with Cloud Run
+![Add Firestore Integration to Cloud Run](./doc/images/screenshot-GCP-CloudRun-add-Firestore-Integraion.png)
+![Service Account Additional Roles Required for Firestore Integration](./doc/images/screenshot-GCP-CloudRun-Firestore-Integration-need-additional-ServiceAccount-Roles.png)
+```shell
+gcloud projects add-iam-policy-binding \
+  aventine-k8s \
+  --member=serviceAccount:182513741822-compute@developer.gserviceaccount.com \
+  --role=roles/storage.admin
+gcloud projects add-iam-policy-binding \
+  aventine-k8s \
+  --member=serviceAccount:182513741822-compute@developer.gserviceaccount.com \
+  --role=roles/logging.bucketWriter
+```
+![Firestore Database Name Environment Variable for Cloud Run](./doc/images/screenshot-GCP-CloudRun-Environment-Firestore-DBName.png)
 
 
