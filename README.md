@@ -129,3 +129,7 @@ gcloud projects add-iam-policy-binding \
 * I would like to have a Global Static Logger, but I'm not yet sure how to do that.
 * Explore the threading model in Go and if scalability can be achieve with Firestore Connection Pooling
 * Production readiness would mean a fully defined, self-documenting (Swagger) API with versioning
+* There are no Unit Tests yet, because, well ... I'm learning
+* For End-to-End Testing, I would try Behaviour Driven Development [BDD] and would chose some like
+  [godog](https://github.com/cucumber/godog)
+* There would need to be some established Coding Standards
