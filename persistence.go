@@ -3,7 +3,8 @@ package main
 import (
 	firestore "cloud.google.com/go/firestore"
 	context "context"
-	"os"
+	ztchooks "github.com/zerotier/ztchooks"
+	os "os"
 )
 
 var ctx = context.Background()
@@ -11,6 +12,7 @@ var ctx = context.Background()
 // parameters for Firestore are gotting from the running Container Environment
 var gcp_project_name = os.Getenv("GCP_PROJECT")
 var database_name = os.Getenv("FIRESTORE_DB_NAME")
+var events_collection_name = os.Getenv("FIRESTORE_EVENTS_COLLECTION_NAME")
 var test_document_path = os.Getenv("TEST_DOCUMENT_PATH")
 
 func EventStoreClient() (*firestore.Client, error) {
@@ -36,4 +38,15 @@ func FetchTestDocument(client *firestore.Client) (*firestore.DocumentSnapshot, e
 		Logger.Errorf("Error fetching Aventine test document from Firestore: %s", err)
 	}
 	return doc, err
+}
+
+func PersistNetworkCreatedEvent(event *ztchooks.NetworkCreated) error {
+	client, _ := EventStoreClient()
+	_, _, err := client.Collection(events_collection_name).Add(ctx, event)
+	if err != nil {
+		if err != nil {
+			Logger.Errorf("Unable to persist Network Created event to Firestore: %s", err)
+		}
+	}
+	return err
 }

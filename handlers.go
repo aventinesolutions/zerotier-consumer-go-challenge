@@ -3,8 +3,9 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
+	fmt "fmt"
 	ztchooks "github.com/zerotier/ztchooks"
+	zap "go.uber.org/zap"
 	"io"
 	"net/http"
 	"os"
@@ -79,6 +80,7 @@ func EventCatcher(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		panic(err.Error())
 	}
+	Logger.Infof("EventCatcher Body: %s", string(body))
 
 	// get signature header from request.  If signature is empty, signature verification
 	// is skipped
@@ -92,19 +94,20 @@ func EventCatcher(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	if err := processPayload(body); err != nil && err != ErrUnhandledHook {
+	if err := processPayload(body, Logger); err != nil && err != ErrUnhandledHook {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("500 - payload processing failed"))
 		return
 	}
 }
 
-func processPayload(payload []byte) error {
+func processPayload(payload []byte, logger *zap.SugaredLogger) error {
 	hType, err := ztchooks.GetHookType(payload)
+	logger.Debugf("Got Hook Type: %s", hType)
+
 	if err != nil {
 		return err
 	}
-
 	//
 	switch hType {
 	case ztchooks.NETWORK_JOIN:
@@ -137,9 +140,9 @@ func processPayload(payload []byte) error {
 		if err := json.Unmarshal(payload, &nc); err != nil {
 			return err
 		}
-
-		// ... do something with NetworkCreated data
-
+		if err := PersistNetworkCreatedEvent(&nc); err != nil {
+			return err
+		}
 	//
 	// Continue with cases you wish to handle as needed
 	//
@@ -149,6 +152,5 @@ func processPayload(payload []byte) error {
 		return ErrUnhandledHook
 	}
 
-	Logger.Infof("payload is: %T", payload)
 	return nil
 }
