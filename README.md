@@ -120,4 +120,6 @@ gcloud projects add-iam-policy-binding \
 * use Go Packages and "layering"for _Separation of Concerns_ ... for example, to encapsulate Routing, Handlers, 
   Persistence and Marshalling of Parameters better; this was not straight forward for me because it is
   not an Object Oriented language where I could declare Classes and Objects.
+* I would like to have a Global Static Logger, but I'm not yet sure how to do that.
 * Explore the threading model in Go and if scalability can be achieve with Firestore Connection Pooling
+* Production readiness would mean a fully defined, self-documenting (Swagger) API with versioning

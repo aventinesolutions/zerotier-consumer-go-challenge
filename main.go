@@ -11,10 +11,14 @@ import (
 	"os"
 )
 
+const (
+	SERVER_ADDR = ":4444"
+)
+
 // WebHook Secret is provided through the environment via a GCP Secret
 var psk = os.Getenv("ZEROTIER_ONE_WEBHOOK_SECRET")
 
-var logger = zap.NewExample().Sugar()
+var Logger = zap.NewExample().Sugar()
 
 var ErrUnhandledHook = errors.New("unhandled hook type")
 var ErrUnknownHookType = errors.New("unknown hook type")
@@ -26,7 +30,7 @@ type SimpleMessage struct {
 
 /* just say "hello!" with a JSON response */
 func helloWorld(w http.ResponseWriter, req *http.Request) {
-	logger.Info("someone wants to say hello")
+	Logger.Info("someone wants to say hello")
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(SimpleMessage{
 		Type:    "hello",
@@ -36,7 +40,7 @@ func helloWorld(w http.ResponseWriter, req *http.Request) {
 
 /* "liveness" for orchestration with a JSON response */
 func liveness(w http.ResponseWriter, req *http.Request) {
-	logger.Debug("Liveness Check")
+	Logger.Debug("Liveness Check")
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(SimpleMessage{
 		Type:    "livez",
@@ -46,7 +50,7 @@ func liveness(w http.ResponseWriter, req *http.Request) {
 
 /* "readiness" for orchestration with a JSON response */
 func readiness(w http.ResponseWriter, req *http.Request) {
-	logger.Debug("Readiness Check")
+	Logger.Debug("Readiness Check")
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(SimpleMessage{
 		Type:    "readyz",
@@ -56,23 +60,11 @@ func readiness(w http.ResponseWriter, req *http.Request) {
 
 /* check that the ZeroTier One Webhook Token is set correctly */
 func check_token(w http.ResponseWriter, req *http.Request) {
-	logger.Debug("Check Token")
+	Logger.Debug("Check Token")
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(SimpleMessage{
 		Type:    "token_set",
 		Message: fmt.Sprintf("%t", len(psk) == 64),
-	})
-}
-
-func check_firestore(w http.ResponseWriter, req *http.Request) {
-	logger.Debug("Check Firestore Events database")
-	client, _ := EventStoreClient(logger)
-	defer client.Close()
-	doc, _ := FetchTestDocument(client, logger)
-	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(SimpleMessage{
-		Type:    "test_firestore_document",
-		Message: fmt.Sprintf("%+v", doc.Data()),
 	})
 }
 
@@ -159,18 +151,18 @@ func main() {
 		if err != nil {
 			panic("unable to defer Zap logging, exiting!")
 		}
-	}(logger)
-	logger.Info("starting ZeroTier Consumer Coding Challenge")
+	}(Logger)
+	Logger.Info("starting ZeroTier Consumer Coding Challenge")
 
 	http.HandleFunc("/hello", helloWorld)
 	http.HandleFunc("/livez", liveness)
 	http.HandleFunc("/readyz", readiness)
 	http.HandleFunc("/check_token", check_token)
-	http.HandleFunc("/check_firestore", check_firestore)
+	http.HandleFunc("/check_firestore", CheckFirestore)
 	http.HandleFunc("/event", eventCatcher)
-	err2 := http.ListenAndServe(":4444", nil)
+	err2 := http.ListenAndServe(SERVER_ADDR, nil)
 	if err2 != nil {
-		logger.Errorf("error starting Web Service: %s", err2)
+		Logger.Errorf("error starting Web Service: %s", err2)
 		panic("unable to start Web Service, exiting!")
 	}
 }
