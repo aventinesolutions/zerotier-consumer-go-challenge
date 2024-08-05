@@ -2,7 +2,8 @@
 Coding Challenge for ZeroTier (Broccoli IT) Webhook Consumer written in GoLang
 
 1. I worked on this locally using IntelliJ Ultimate on Pengwin WSL2 (WLinux)
-2. The run was installed using my Google Cloud Platform account
+2. The web service was installed using my Google Cloud Platform account
+3. The persistence is done with an Events Collection in Firestore 
 
 # GoLang on Pengwin WSL2
 * download [go1.22.5.linux-amd64.tar.gz](https://go.dev/dl/go1.22.5.linux-amd64.tar.gz)
@@ -95,10 +96,6 @@ curl -vvv https://zerotier-consumer-service-lfxfk2my7a-ew.a.run.app/hello
 * use your account in Central to create a Webhook Signing Secret value
 * create a Secret `ZeroTierOneTestWebhook` in "Secret Manager" which contains this Webhook Signing Secret value
 
-# Things to Make this Service Production Ready
-* Using GitOps, it needs a pipeline to run tests, build, tag and push the image to GCP "Artifact Registry";
-  this could be done using GCP "Cloud Build"
-
 # Firestore Database and Integration with Cloud Run
 ![Add Firestore Integration to Cloud Run](./doc/images/screenshot-GCP-CloudRun-add-Firestore-Integraion.png)
 ![Service Account Additional Roles Required for Firestore Integration](./doc/images/screenshot-GCP-CloudRun-Firestore-Integration-need-additional-ServiceAccount-Roles.png)
@@ -114,7 +111,20 @@ gcloud projects add-iam-policy-binding \
 ```
 ![Firestore Database Name Environment Variable for Cloud Run](./doc/images/screenshot-GCP-CloudRun-Environment-Firestore-DBName.png)
 
+# Cloud Run Environment Variables and Secret for ZeroTier One Webhook Signing
+![Cloud Run Environment Variables and Secret for ZeroTier One Webhook Signing](./doc/images/screenshot-GCP-ZeroTier-CloudRun-VariablesSecrets.png)
+* These are the required Environment Variables for the container to run correctly
+  - `ZEROTIER_ONE_WEBHOOK_SECRET`
+  - `GCP_PROJECT`
+  - `FIRESTORE_DB_NAME`
+  - `FIRESTORE_EVENTS_COLLECTION_NAME`
+  - `TEST_DOCUMENT_PATH`
+* There is a Secret for the ZeroTier One Webhook Signing Token which can be easily rotated
+  - `ZeroTierOneTestWebhook`
+
 # Improvements to Make This More Production Ready
+* Using GitOps, it needs a pipeline to run tests, build, tag and push the image to GCP "Artifact Registry";
+  this could be done using GCP "Cloud Build"
 * It seems my error handling is pretty primitive; explore the best practices of handling errors and exceptions
   in Go
 * use Go Packages and "layering"for _Separation of Concerns_ ... for example, to encapsulate Routing, Handlers, 
