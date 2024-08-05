@@ -3,7 +3,7 @@ FROM golang:1.22.5-alpine AS builder
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
-COPY main.go persistence.go handlers.go ./
+COPY main.go persistence.go handlers.go routing.go ./
 RUN go build -o main .
 RUN adduser --disabled-password appuser
 USER appuser
