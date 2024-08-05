@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	ztchooks "github.com/zerotier/ztchooks"
 	zap "go.uber.org/zap"
 	"io"
@@ -22,51 +21,6 @@ var Logger = zap.NewExample().Sugar()
 
 var ErrUnhandledHook = errors.New("unhandled hook type")
 var ErrUnknownHookType = errors.New("unknown hook type")
-
-type SimpleMessage struct {
-	Type    string `json:"type"`
-	Message string `json:"message"`
-}
-
-/* just say "hello!" with a JSON response */
-func helloWorld(w http.ResponseWriter, req *http.Request) {
-	Logger.Info("someone wants to say hello")
-	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(SimpleMessage{
-		Type:    "hello",
-		Message: "Hello, Aventine Solutions!",
-	})
-}
-
-/* "liveness" for orchestration with a JSON response */
-func liveness(w http.ResponseWriter, req *http.Request) {
-	Logger.Debug("Liveness Check")
-	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(SimpleMessage{
-		Type:    "livez",
-		Message: "true",
-	})
-}
-
-/* "readiness" for orchestration with a JSON response */
-func readiness(w http.ResponseWriter, req *http.Request) {
-	Logger.Debug("Readiness Check")
-	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(SimpleMessage{
-		Type:    "readyz",
-		Message: "true",
-	})
-}
-
-/* check that the ZeroTier One Webhook Token is set correctly */
-func check_token(w http.ResponseWriter, req *http.Request) {
-	Logger.Debug("Check Token")
-	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(SimpleMessage{
-		Type:    "token_set",
-		Message: fmt.Sprintf("%t", len(psk) == 64),
-	})
-}
 
 func eventCatcher(w http.ResponseWriter, req *http.Request) {
 	// read post body
@@ -154,10 +108,10 @@ func main() {
 	}(Logger)
 	Logger.Info("starting ZeroTier Consumer Coding Challenge")
 
-	http.HandleFunc("/hello", helloWorld)
-	http.HandleFunc("/livez", liveness)
-	http.HandleFunc("/readyz", readiness)
-	http.HandleFunc("/check_token", check_token)
+	http.HandleFunc("/hello", HelloWorld)
+	http.HandleFunc("/livez", Liveness)
+	http.HandleFunc("/readyz", Readiness)
+	http.HandleFunc("/check_token", CheckToken)
 	http.HandleFunc("/check_firestore", CheckFirestore)
 	http.HandleFunc("/event", eventCatcher)
 	err2 := http.ListenAndServe(SERVER_ADDR, nil)
