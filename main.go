@@ -1,13 +1,11 @@
 package main
 
 import (
-	"cloud.google.com/go/firestore"
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/zerotier/ztchooks"
-	"go.uber.org/zap"
+	ztchooks "github.com/zerotier/ztchooks"
+	zap "go.uber.org/zap"
 	"io"
 	"net/http"
 	"os"
@@ -67,20 +65,10 @@ func check_token(w http.ResponseWriter, req *http.Request) {
 }
 
 func check_firestore(w http.ResponseWriter, req *http.Request) {
-	ctx := context.Background()
 	logger.Debug("Check Firestore Events database")
-	client, err1 := firestore.NewClientWithDatabase(ctx, "aventine-k8s", "zerotier-events")
-	if err1 != nil {
-		// Handle error
-		logger.Errorf("Error creating Firestore client:", err1)
-		panic("unable to create Firestore client")
-	}
+	client, _ := EventStoreClient(logger)
 	defer client.Close()
-	ref := client.Doc("aventine/OLU9N1NkR0EYwYpGeBXi")
-	doc, err2 := ref.Get(ctx)
-	if err2 != nil {
-		logger.Errorf("Error fetching document from Firestore: %s", err2)
-	}
+	doc, _ := FetchTestDocument(client, logger)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(SimpleMessage{
 		Type:    "test_firestore_document",

@@ -115,5 +115,9 @@ gcloud projects add-iam-policy-binding \
 ![Firestore Database Name Environment Variable for Cloud Run](./doc/images/screenshot-GCP-CloudRun-Environment-Firestore-DBName.png)
 
 # Improvements to Make This More Production Ready
+* It seems my error handling is pretty primitive; explore the best practices of handling errors and exceptions
+  in Go
 * use Go Packages and "layering"for _Separation of Concerns_ ... for example, to encapsulate Routing, Handlers, 
-  Persistence and Marshalling of Parameters (not so straight forward if you're used to Object Oriented languages)
+  Persistence and Marshalling of Parameters better; this was not straight forward for me because it is
+  not an Object Oriented language where I could declare Classes and Objects.
+* Explore the threading model in Go and if scalability can be achieve with Firestore Connection Pooling

@@ -3,7 +3,7 @@ module github.com/aventinesolutions/zerotier-consumer-go-challenge
 go 1.22.5
 
 require (
-    cloud.google.com/go/firestore v1.16.0
+	cloud.google.com/go/firestore v1.16.0
 	github.com/zerotier/ztchooks v0.1.5
 	go.uber.org/zap v1.17.0
 )
@@ -13,7 +13,6 @@ require (
 	cloud.google.com/go/auth v0.7.2 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.3 // indirect
 	cloud.google.com/go/compute/metadata v0.5.0 // indirect
-	cloud.google.com/go/firestore v1.16.0 // indirect
 	cloud.google.com/go/longrunning v0.5.9 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
