@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	SERVER_ADDR = ":4444"
+	ServerAddr = ":4444"
 )
 
 // WebHook Secret is provided through the environment via a GCP Secret
@@ -114,7 +114,7 @@ func main() {
 	http.HandleFunc("/check_token", CheckToken)
 	http.HandleFunc("/check_firestore", CheckFirestore)
 	http.HandleFunc("/event", eventCatcher)
-	err2 := http.ListenAndServe(SERVER_ADDR, nil)
+	err2 := http.ListenAndServe(ServerAddr, nil)
 	if err2 != nil {
 		Logger.Errorf("error starting Web Service: %s", err2)
 		panic("unable to start Web Service, exiting!")
